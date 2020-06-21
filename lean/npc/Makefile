@@ -7,8 +7,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=npc
-PKG_VERSION:=0.26.7
-PKG_RELEASE:=2
+PKG_VERSION:=0.26.8
+PKG_RELEASE:=1
 
 ifeq ($(ARCH),mipsel)
 	NPC_ARCH:=mipsle
@@ -67,6 +67,7 @@ define Build/Prepare
 endef
 
 define Build/Configure
+	$(STAGING_DIR_HOST)/bin/upx --lzma --best $(PKG_BUILD_DIR)/npc
 endef
 
 define Build/Compile
