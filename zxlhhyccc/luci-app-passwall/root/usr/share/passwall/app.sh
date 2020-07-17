@@ -255,7 +255,7 @@ run_socks() {
 		ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray "-config=$config_file"
 	elif [ "$type" == "trojan" ]; then
 		lua $API_GEN_TROJAN $node client $bind $local_port > $config_file
-		ln_start_bin $(find_bin trojan) trojan "-c $config_file"
+		ln_start_bin $(find_bin trojan-plus) trojan-plus "-c $config_file"
 	elif [ "$type" == "trojan-go" ]; then
 		lua $API_GEN_TROJAN $node client $bind $local_port > $config_file
 		ln_start_bin $(config_t_get global_app trojan_go_file $(find_bin trojan-go)) trojan-go "-config $config_file"
@@ -308,7 +308,7 @@ run_redir() {
 			ln_start_bin $(config_t_get global_app v2ray_file $(find_bin v2ray))/v2ray v2ray "-config=$config_file"
 		elif [ "$type" == "trojan" ]; then
 			lua $API_GEN_TROJAN $node nat "0.0.0.0" $local_port >$config_file
-			ln_start_bin $(find_bin trojan) trojan "-c $config_file"
+			ln_start_bin $(find_bin trojan-plus) trojan-plus "-c $config_file"
 		elif [ "$type" == "trojan-go" ]; then
 			lua $API_GEN_TROJAN $node nat "0.0.0.0" $local_port >$config_file
 			ln_start_bin $(config_t_get global_app trojan_go_file $(find_bin trojan-go)) trojan-go "-config $config_file"
@@ -343,7 +343,7 @@ run_redir() {
 		elif [ "$type" == "trojan" ]; then
 			lua $API_GEN_TROJAN $node nat "0.0.0.0" $local_port > $config_file
 			for k in $(seq 1 $process); do
-				ln_start_bin $(find_bin trojan) trojan "-c $config_file"
+				ln_start_bin $(find_bin trojan-plus) trojan-plus "-c $config_file"
 			done
 		elif [ "$type" == "trojan-go" ]; then
 			lua $API_GEN_TROJAN $node nat "0.0.0.0" $local_port > $config_file
@@ -352,6 +352,7 @@ run_redir() {
 			local kcptun_use=$(config_n_get $node use_kcp 0)
 			if [ "$kcptun_use" == "1" ]; then
 				local kcptun_server_host=$(config_n_get $node kcp_server)
+				local network_type="ipv4"
 				local kcptun_port=$(config_n_get $node kcp_port)
 				local kcptun_config="$(config_n_get $node kcp_opts)"
 				if [ -z "$kcptun_port" -o -z "$kcptun_config" ]; then
