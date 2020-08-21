@@ -13,7 +13,7 @@ PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/tostercx/ssocks.git
-PKG_SOURCE_VERSION:=c2024789c1ee076d171fd6061d7c133302216ea7
+PKG_SOURCE_VERSION:=9b32219933e58a4be6d7f48fbc073aeee2082655
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
@@ -28,6 +28,7 @@ PKG_USE_MIPS16:=0
 PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/cmake.mk
 
 define Package/$(PKG_NAME)
 	SECTION:=net
@@ -40,9 +41,12 @@ define Package/$(PKG_NAME)/description
 sSocks is a package which contains: a socks5 server implements RFC 1928 (SOCKS V5) and RFC 1929 (Authentication for SOCKS V5), a reverse socks server and client, a netcat like tool and a socks5 relay.
 endef
 
+define Build/Install
+endef
+
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/ssocksd $(1)/usr/bin/ssocks
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/ssocksd $(1)/usr/bin/ssocks
 endef
 
 $(eval $(call BuildPackage,$(PKG_NAME)))
