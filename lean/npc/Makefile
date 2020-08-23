@@ -24,12 +24,18 @@ ifeq ($(ARCH),x86_64)
 endif
 ifeq ($(ARCH),arm)
 	NPC_ARCH:=arm_v7
-	ifeq ($(BOARD),bcm53xx)
-		NPC_ARCH:=arm_v5
-  endif
-	ifeq ($(BOARD),kirkwood)
-		NPC_ARCH:=arm_v5
-  endif
+endif
+ifeq ($(BOARD),bcm53xx)
+	NPC_ARCH:=arm_v6
+ifeq ($(word 2,$(subst +,$(space),$(call qstrip,$(CONFIG_CPU_TYPE)))),)
+	NPC_ARCH:=arm_v5
+endif
+endif
+ifeq ($(BOARD),kirkwood)
+	NPC_ARCH:=arm_v5
+endif
+ifeq ($(ARCH),arm64)
+	NPC_ARCH:=arm64
 endif
 ifeq ($(ARCH),aarch64)
 	NPC_ARCH:=arm64
@@ -47,7 +53,7 @@ define Package/$(PKG_NAME)
 	SECTION:=net
 	CATEGORY:=Network
 	TITLE:=NPC Client
-	DEPENDS:=@(aarch64||arm||i386||mips||mipsel||x86_64)
+	DEPENDS:=@(aarch64||arm||arm64||i386||mips||mipsel||x86_64)
 	URL:=https://github.com/ehang-io/nps/releases
 endef
 
