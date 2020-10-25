@@ -165,7 +165,7 @@ return L.view.extend({
 			_('The supported language codes can be used to customize the setting.'));
 		o.value('en', _('English (en)'));
 		o.value('zh', _('Chinese (zh)'));
-		o.default = 'en';
+		o.default = 'zh';
 
 		o = s.taboption('basic', form.Flag, 'Enabled', _('Enable Log'), _('Enable logger to log file.'));
 		o.enabled = 'true';
