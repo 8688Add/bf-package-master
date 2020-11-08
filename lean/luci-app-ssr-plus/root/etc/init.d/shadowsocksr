@@ -762,7 +762,7 @@ start() {
 	start_monitor
 	check_server
 	clean_log
-	echo "------------end------------" >>/tmp/ssrplus.log
+	echo "-----------end------------" >>/tmp/ssrplus.log
 	rm -f $LOCK_FILE
 }
 
