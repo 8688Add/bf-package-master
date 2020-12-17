@@ -740,7 +740,6 @@ if [ ! -f "$RAW_CONFIG_FILE" ]; then
    if [ -n "$subscribe_info" ]; then
       echo "配置文件不存在，您已设置订阅信息，准备开始下载..." >$START_LOG
       sleep 3
-      kill_clash
       nohup /usr/share/openclash/openclash.sh &
       del_lock
       exit 0
@@ -774,6 +773,24 @@ elif [ ! -f "$CONFIG_FILE" ] || [ ! -s "$CONFIG_FILE" ]; then
    sleep 3
    start_fail
 fi
+}
+
+yml_other_rules_get()
+{
+   local section="$1"
+   local enabled config
+   config_get_bool "enabled" "$section" "enabled" "1"
+   config_get "config" "$section" "config" ""
+   
+   if [ "$enabled" = "0" ] || [ "$config" != "$2" ]; then
+      return
+   fi
+   
+   if [ -n "$rule_name" ]; then
+      return
+   fi
+   
+   config_get "rule_name" "$section" "rule_name" ""
 }
 
 #运行模式处理
@@ -846,8 +863,13 @@ do_run_file()
       core_type="Game"
       core_start_log="检测到配置了【Game】内核专属功能，调用【Game】内核启动..."
    fi
+   
+   if [ "$rule_source" != "0" ]; then
+      config_load "openclash"
+      config_foreach yml_other_rules_get "other_rules" "$CONFIG_NAME"
+   fi
 
-   if [ "$proxy_mode" = "script" ] || [ "$rule_source" = "ConnersHua" ] || [ "$rule_source" = "lhie1" ] || [ -n "$(ruby_read "$CONFIG_FILE" "['rules'].grep(/^RULE-SET,/)")" ]; then
+   if [ "$proxy_mode" = "script" ] || [ "$rule_name" = "ConnersHua" ] || [ "$rule_name" = "lhie1" ] || [ -n "$(ruby_read "$CONFIG_FILE" "['rules'].grep(/^RULE-SET,/)")" ]; then
       if [ "$en_mode_tun" != "2" ]; then
          rm -rf "/etc/openclash/clash" 2>/dev/null
          ln -s "$tun_core_path" /etc/openclash/clash 2>/dev/null
