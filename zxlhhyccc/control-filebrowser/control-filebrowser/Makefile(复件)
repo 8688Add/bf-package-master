@@ -6,14 +6,14 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=filebrowser
+PKG_NAME:=control-filebrowser
 PKG_VERSION:=2.13.0
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_VERSION:=d2e6d23741d92dbc7608aed9797dc960bbe1fd6b
+PKG_SOURCE_VERSION:=e1f658633dd0d603693e869ed49be66ad1c7991d
 PKG_SOURCE_URL:=https://github.com/filebrowser/filebrowser
-PKG_MIRROR_HASH:=81ccb0bca5f0a384fda3206f78475be79e50286b48742083a7438dd30f025ff4
+PKG_MIRROR_HASH:=cc046e305a81e088936b42453a947d368ede4c712ee828a07f0479d6ce8f0e6d
 
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
@@ -36,7 +36,7 @@ GO_PKG_LDFLAGS_X:= \
 include $(INCLUDE_DIR)/package.mk
 include $(TOPDIR)/feeds/packages/lang/golang/golang-package.mk
 
-define Package/filebrowser
+define Package/control-filebrowser
   SECTION:=utils
   CATEGORY:=Utilities
   TITLE:=Web File Browser
@@ -44,14 +44,14 @@ define Package/filebrowser
   DEPENDS:=$(GO_ARCH_DEPENDS)
 endef
 
-define Package/filebrowser/description
+define Package/control-filebrowser/description
   filebrowser provides a file managing interface within a specified directory
   and it can be used to upload, delete, preview, rename and edit your files.
   It allows the creation of multiple users and each user can have its own directory.
   It can be used as a standalone app or as a middleware.
 endef
 
-define Package/filebrowser/config
+define Package/control-filebrowser/config
 config FILEBROWSER_COMPRESS_GOPROXY
 	bool "Compiling with GOPROXY proxy"
 	default n
@@ -68,10 +68,17 @@ endif
 
 define Build/Compile
 ( \
+  cd $(PKG_BUILD_DIR) ; \
+  rm -rf frontend/dist ; \
+  rm -f http/rice-box.go ; \
   cd $(PKG_BUILD_DIR)/frontend ; \
   npm ci; \
   npm run lint ; \
   npm run build ; \
+  GOOS=$$$$(go env GOOS) GOARCH=$$$$(go env GOARCH) GO111MODULE=off go get -v github.com/GeertJohan/go.rice/rice/... ; \
+  cd $(PKG_BUILD_DIR)/http ; \
+  rm -rf rice-box.go ; \
+  "$$$$(go env GOPATH)/bin/rice" embed-go ; \
   $(call GoPackage/Build/Compile) ; \
 )
 ifeq ($(CONFIG_FILEBROWSER_COMPRESS_UPX),y)
@@ -79,13 +86,12 @@ ifeq ($(CONFIG_FILEBROWSER_COMPRESS_UPX),y)
 endif
 endef
 
-define Package/filebrowser/install
+define Package/control-filebrowser/install
 	$(call GoPackage/Package/Install/Bin,$(PKG_INSTALL_DIR))
-	$(INSTALL_DIR) $(1)/etc/config/ $(1)/etc/init.d/ $(1)/usr/bin/
-	$(INSTALL_CONF) $(CURDIR)/files/filebrowser.config $(1)/etc/config/filebrowser
-	$(INSTALL_BIN) $(CURDIR)/files/filebrowser.init $(1)/etc/init.d/filebrowser
+
+	$(INSTALL_DIR) $(1)/usr/bin/
 	$(INSTALL_BIN) $(GO_PKG_BUILD_BIN_DIR)/filebrowser $(1)/usr/bin/filebrowser
 endef
 
-$(eval $(call GoBinPackage,filebrowser))
-$(eval $(call BuildPackage,filebrowser))
+$(eval $(call GoBinPackage,control-filebrowser))
+$(eval $(call BuildPackage,control-filebrowser))
